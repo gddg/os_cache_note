@@ -1,6 +1,6 @@
 # chepter9_master_slave_kernel
 
-# chepter9_master_slave_kernel
+## 主从内核 ##
 
 摘要：
 - 主从内核 master slave kernel 
