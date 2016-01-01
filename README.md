@@ -7,7 +7,6 @@
 
 
 
-
 ##第八章 多处理器系统
 ![Alt text](chepter8_mpsystem.png)
 
