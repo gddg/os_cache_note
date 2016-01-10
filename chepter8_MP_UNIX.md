@@ -119,7 +119,7 @@ read－modify－write
 特殊CPU指令实现，CPU实现复杂。同步时用。银行存款绝对可靠。
 
 
-### 8.3.3.2 test－and－set 测试设置指令
+### 8.3.3.2 test_and_set 测试设置指令
 原理：读一个字，字和0比较，处理器设置**条件码**，1保存字上。
 > 测试变量，是不是0，结果放在条件码寄存器里面，再把这个变量设置为1 。 
 
@@ -127,6 +127,10 @@ read－modify－write
 条件码：进位标志，零标志，符号标志，溢出标志。
 
 测试和设置，需要原子交换知道那个变量是0可用，还是1上锁了。
+
+compare-and-swap (CAS)
+<https://en.wikipedia.org/wiki/Compare-and-swap>
+ 
 
 swap－atomic 原子交换
 
@@ -288,13 +292,14 @@ a1和b1，都修改C，最多我们看出C最后被谁修改的。b1（1000～5k
 
 场景：**中断回调函数，什么时候被调用都不知道。**
 
-中断处理代码和普通代码（base－level code）使用同一数据结构。
+中断处理代码和驱动代码（base－level code）使用同一数据结构。
 内核态执行的代码会==*临时禁止中断。*== ，需要修改代码。
 
 > 禁止中断 s＝splhi（） 设置成最高中断优先级
 > counter＋＋
 > 恢复中断 splx（s），恢复过去的中断优先级
 
+spl＝set priority level 设置优先级，中断优先级降低，处理器忽略中断。
 
 
 
@@ -397,7 +402,7 @@ void unlock_object(char * flag_ptr){
 - 一个进程判断到锁被占用准备自己睡眠，另外一个进程正在释放锁和唤醒，那么睡眠的进程将**不被唤醒**，直到下一个用完锁释放的人。
   A线程做完①还没做②，B线程在③和④并且一起做完了，那么②就陷入无人唤醒的睡眠中。
 
-``` 
+```c 
 void lock_object(char *  flag_ptr){
   while (*flag_ptr) ①
     sleep(flag_ptr)；② 
@@ -405,7 +410,7 @@ void lock_object(char *  flag_ptr){
 }
 ```
 
-```
+```c
 void unlock_object(char * flag_ptr){
 	* flag_ptr = 0 ; //解锁          ③
 	walkup( flag_ptr );  //手工唤醒   ④
